@@ -17,10 +17,40 @@ public class VPersona extends javax.swing.JFrame {
 
     public VPersona() throws ClassNotFoundException, IOException {
         initComponents();
-
         mdPersona = new MdPersona();
         TPersona.setModel(mdPersona.buscarPersona());
         TPersona.getColumnModel().getColumn(3).setMaxWidth(0);
+    }
+
+    private void limpiar() throws IOException {
+        TNombre.setText("");
+        TApellido.setText("");
+        this.condicion = 1;
+        this.codigo = 0;
+        TNombre.requestFocus();
+        TPersona.setModel(mdPersona.buscarPersona());
+    }
+
+    private void capturarDatos() {
+        map = new HashMap<>();
+        map.put("id", this.codigo);
+        map.put("nombre", TNombre.getText());
+        map.put("apellido", TApellido.getText());
+    }
+    
+    private boolean validar(){
+        if (TNombre.getText().equals("")) {
+            this.message("debe llenar la nombre", "Advertencia");
+            return false;
+        } else if (TApellido.getText().equals("")) {
+            this.message("debe llenar la apellido", "Advertencia");
+            return false;
+        } 
+        return true;
+    }
+
+    private void message(String menssage, String header) {
+        JOptionPane.showMessageDialog(null, menssage, header, JOptionPane.INFORMATION_MESSAGE);
     }
 
     @SuppressWarnings("unchecked")
@@ -159,30 +189,20 @@ public class VPersona extends javax.swing.JFrame {
     }//GEN-LAST:event_TNombreActionPerformed
 
     private void BSalvarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BSalvarMouseClicked
-        String result = "";
-        if (TNombre.getText().equals("")) {
-            JOptionPane.showMessageDialog(null, "debe llenar la nombre");
-        } else if (TApellido.getText().equals("")) {
-            JOptionPane.showMessageDialog(null, "debe llenar la apellido");
-        } else {
-            map = new HashMap<>();
-            map.put("id", this.codigo);
-            map.put("nombre", TNombre.getText());
-            map.put("apellido", TApellido.getText());
+        String result;
+        if (validar()){
+            this.capturarDatos();
             try {
                 if (this.condicion == 1) {
                     result = mdPersona.crearPersona(map);
                 } else {
                     result = mdPersona.modificarPersona(map);
-                    this.condicion = 1;
                 }
                 if (result.equals("1")) {
-                    JOptionPane.showMessageDialog(null, "Operación realizada correctamente", "Informacion", JOptionPane.INFORMATION_MESSAGE);
-                    TPersona.setModel(mdPersona.buscarPersona());
-                    TNombre.setText("");
-                    TApellido.setText("");
+                    this.message("Operación realizada correctamente", "Informacion");
+                    this.limpiar();
                 } else {
-                    JOptionPane.showMessageDialog(null, result, "Informacion", JOptionPane.INFORMATION_MESSAGE);
+                    this.message(result, "Advertencia");
                 }
             } catch (IOException ex) {
                 Logger.getLogger(VPersona.class.getName()).log(Level.SEVERE, null, ex);
@@ -191,8 +211,11 @@ public class VPersona extends javax.swing.JFrame {
     }//GEN-LAST:event_BSalvarMouseClicked
 
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
-        TNombre.setText("");
-        this.condicion = 1;
+        try {
+            this.limpiar();
+        } catch (IOException ex) {
+            Logger.getLogger(VPersona.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton2MouseClicked
 
     private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
@@ -209,7 +232,6 @@ public class VPersona extends javax.swing.JFrame {
     }//GEN-LAST:event_TPersonaMouseClicked
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
         this.dispose();
     }//GEN-LAST:event_jButton3ActionPerformed
 
