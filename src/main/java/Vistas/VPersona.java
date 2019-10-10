@@ -19,12 +19,13 @@ public class VPersona extends javax.swing.JFrame {
         initComponents();
         mdPersona = new MdPersona();
         TPersona.setModel(mdPersona.buscarPersona());
-        TPersona.getColumnModel().getColumn(3).setMaxWidth(0);
+//        TPersona.getColumnModel().getColumn(3).setMaxWidth(0);
     }
 
     private void limpiar() throws IOException {
         TNombre.setText("");
         TApellido.setText("");
+        CActivo.setSelected(false);
         this.condicion = 1;
         this.codigo = 0;
         TNombre.requestFocus();
@@ -36,6 +37,7 @@ public class VPersona extends javax.swing.JFrame {
         map.put("id", this.codigo);
         map.put("nombre", TNombre.getText());
         map.put("apellido", TApellido.getText());
+        map.put("estado", CActivo.isSelected());
     }
     
     private boolean validar(){
@@ -66,6 +68,7 @@ public class VPersona extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         TApellido = new javax.swing.JTextField();
+        CActivo = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -128,6 +131,8 @@ public class VPersona extends javax.swing.JFrame {
 
         jLabel2.setText("Apellido:");
 
+        CActivo.setText("Activo");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -145,14 +150,16 @@ public class VPersona extends javax.swing.JFrame {
                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addComponent(TApellido, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(TNombre, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)))
+                        .addComponent(TNombre, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE))
+                    .addComponent(CActivo))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(48, 48, 48))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(49, 49, 49))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -166,19 +173,16 @@ public class VPersona extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(TApellido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(TApellido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton3)
-                        .addContainerGap(16, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(BSalvar)
-                            .addComponent(jButton2))
-                        .addGap(23, 23, 23))))
+                        .addComponent(CActivo))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(BSalvar)
+                    .addComponent(jButton2)
+                    .addComponent(jButton3))
+                .addGap(23, 23, 23))
         );
 
         pack();
@@ -228,6 +232,7 @@ public class VPersona extends javax.swing.JFrame {
             this.codigo = Integer.parseInt(TPersona.getValueAt(TPersona.getSelectedRow(), 0).toString());
             this.TNombre.setText(TPersona.getValueAt(TPersona.getSelectedRow(), 1).toString());
             this.TApellido.setText(TPersona.getValueAt(TPersona.getSelectedRow(), 2).toString());
+            this.CActivo.setSelected((Boolean) TPersona.getValueAt(TPersona.getSelectedRow(), 3));
         }
     }//GEN-LAST:event_TPersonaMouseClicked
 
@@ -280,6 +285,7 @@ public class VPersona extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BSalvar;
+    private javax.swing.JCheckBox CActivo;
     private javax.swing.JTextField TApellido;
     private javax.swing.JTextField TNombre;
     private javax.swing.JTable TPersona;
