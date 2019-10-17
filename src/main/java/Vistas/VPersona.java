@@ -1,25 +1,27 @@
 package Vistas;
 
-import Modelo.MdPersona;
+import Service.Modelo;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 public class VPersona extends javax.swing.JFrame {
 
-    private final MdPersona mdPersona;
+    private final Modelo modelo;
     private int condicion = 1;
     private int codigo = 0;
     private Map<String, Object> map;
 
     public VPersona() throws ClassNotFoundException, IOException {
         initComponents();
-        mdPersona = new MdPersona();
-        TPersona.setModel(mdPersona.buscarPersona());
-//        TPersona.getColumnModel().getColumn(3).setMaxWidth(0);
+        modelo = new Modelo();
+        TPersona.setModel(this.llenarTabla());
+        TPersona.getColumnModel().getColumn(3).setMaxWidth(0);
     }
 
     private void limpiar() throws IOException {
@@ -29,7 +31,7 @@ public class VPersona extends javax.swing.JFrame {
         this.condicion = 1;
         this.codigo = 0;
         TNombre.requestFocus();
-        TPersona.setModel(mdPersona.buscarPersona());
+        TPersona.setModel(this.llenarTabla());
     }
 
     private void capturarDatos() {
@@ -49,6 +51,24 @@ public class VPersona extends javax.swing.JFrame {
             return false;
         } 
         return true;
+    }
+    
+    private DefaultTableModel llenarTabla() throws IOException{
+        Object[] fila = new Object[4];
+        DefaultTableModel dModel = new DefaultTableModel();
+        dModel.addColumn("#");
+        dModel.addColumn("Nombre");
+        dModel.addColumn("Apellido");
+        dModel.addColumn("Estado");
+        List<Map<String, Object>> list = modelo.buscar("get_persona", "f_persona", new HashMap());
+        list.stream().forEach(mapsData -> {
+            fila[0] = mapsData.get("id");
+            fila[1] = mapsData.get("nombre");
+            fila[2] = mapsData.get("apellido");
+            fila[3] = mapsData.get("estado");
+            dModel.addRow(fila);
+        });
+        return dModel;
     }
 
     private void message(String menssage, String header) {
@@ -198,9 +218,9 @@ public class VPersona extends javax.swing.JFrame {
             this.capturarDatos();
             try {
                 if (this.condicion == 1) {
-                    result = mdPersona.crearPersona(map);
+                    result = modelo.crud("crear_persona",map);
                 } else {
-                    result = mdPersona.modificarPersona(map);
+                    result = modelo.crud("modificar_persona",map);
                 }
                 if (result.equals("1")) {
                     this.message("Operación realizada correctamente", "Informacion");
