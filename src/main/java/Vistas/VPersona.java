@@ -16,10 +16,14 @@ public class VPersona extends javax.swing.JFrame {
     private int condicion = 1;
     private int codigo = 0;
     private Map<String, Object> map;
+    private final DefaultTableModel dModel;
+    private String result;
 
     public VPersona() throws ClassNotFoundException, IOException {
         initComponents();
         modelo = new Modelo();
+        dModel = new DefaultTableModel();
+        this.generarTabla();
         TPersona.setModel(this.llenarTabla());
         TPersona.getColumnModel().getColumn(3).setMaxWidth(0);
     }
@@ -41,25 +45,34 @@ public class VPersona extends javax.swing.JFrame {
         map.put("apellido", TApellido.getText());
         map.put("estado", CActivo.isSelected());
     }
-    
-    private boolean validar(){
+
+    private boolean validar() {
         if (TNombre.getText().equals("")) {
             this.message("debe llenar la nombre", "Advertencia");
             return false;
         } else if (TApellido.getText().equals("")) {
             this.message("debe llenar la apellido", "Advertencia");
             return false;
-        } 
+        }
+        this.capturarDatos();
         return true;
     }
-    
-    private DefaultTableModel llenarTabla() throws IOException{
-        Object[] fila = new Object[4];
-        DefaultTableModel dModel = new DefaultTableModel();
+
+    /*generar la tabla con todas las caracteristicas*/
+    private void generarTabla() {
         dModel.addColumn("#");
         dModel.addColumn("Nombre");
         dModel.addColumn("Apellido");
         dModel.addColumn("Estado");
+    }
+
+    private DefaultTableModel llenarTabla() throws IOException {
+        //limpiar modelo
+        for (int i = dModel.getRowCount() - 1; i >= 0; i--) {
+            dModel.removeRow(i);
+        }
+        //volver a llenar
+        Object[] fila = new Object[4];
         List<Map<String, Object>> list = modelo.buscar("get_persona", "f_persona", new HashMap());
         list.stream().forEach(mapsData -> {
             fila[0] = mapsData.get("id");
@@ -71,6 +84,7 @@ public class VPersona extends javax.swing.JFrame {
         return dModel;
     }
 
+    /*mensajes*/
     private void message(String menssage, String header) {
         JOptionPane.showMessageDialog(null, menssage, header, JOptionPane.INFORMATION_MESSAGE);
     }
@@ -213,14 +227,12 @@ public class VPersona extends javax.swing.JFrame {
     }//GEN-LAST:event_TNombreActionPerformed
 
     private void BSalvarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BSalvarMouseClicked
-        String result;
-        if (validar()){
-            this.capturarDatos();
+        if (validar()) {
             try {
                 if (this.condicion == 1) {
-                    result = modelo.crud("crear_persona",map);
+                    result = modelo.crud("crear_persona", map);
                 } else {
-                    result = modelo.crud("modificar_persona",map);
+                    result = modelo.crud("modificar_persona", map);
                 }
                 if (result.equals("1")) {
                     this.message("Operación realizada correctamente", "Informacion");
