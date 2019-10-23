@@ -29,7 +29,6 @@ public class WebService {
       
     }
 
-    
     public Map sendRequest(String uri, Map jsonData) throws IOException {
         
         client = ClientBuilder.newClient();
@@ -52,23 +51,25 @@ public class WebService {
         return Utilidades.jsonConvertJsonToMap(respuesta);
     }
     
-    public Map sendRequest(String uri) {
+    public Map sendRequest(String uri, String descripcion) throws IOException {
+        
         client = ClientBuilder.newClient();
-        webTarget = client.target(BASE_URI+uri);
-        String respuesta = null;
+        webTarget = client.target(BASE_URI+uri+"/"+descripcion);
+        
+        Response response = null;
+
         try {
-            respuesta = webTarget.request(MediaType.TEXT_PLAIN).get(String.class);
+            response = webTarget.request(MediaType.TEXT_PLAIN).post(Entity.form(new Form()));
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error Conectando al servidor: \n" + e.getMessage(), "Informacion", JOptionPane.ERROR_MESSAGE);
         }
-
+        String respuesta = response.readEntity(String.class);
         if (respuesta.equals("")) {
-            JOptionPane.showMessageDialog(null, "2 Error Conectando al servidor \n", "Informacion", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error Conectando al servidor \n", "Informacion", JOptionPane.ERROR_MESSAGE);
             return null;
         }
         return Utilidades.jsonConvertJsonToMap(respuesta);
     }
-    
 
     public void close() {
         client.close();
