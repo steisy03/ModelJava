@@ -20,13 +20,14 @@ public class Modelo {
     /* para crear, modificar o eliminar
     * uri: la ruta del servicio
     * map: el request
+    * respuesta: es la respuesta del servicio... 1 para exitoso o un string con la Excepcion
      */
     public String crud(String uri, Map map) throws IOException {
         Map responseMap = webService.sendRequest(uri, map);
         return responseMap.get("respuesta").toString();
     }
 
-    /* para para una busqueda con parametros
+    /* para una busqueda con parametros o sin ellos (new HashMap<>())
     * uri: la ruta del servicio
     * map: el request
     * lista: nombre de la lista que trae el metodo como respuesta
@@ -36,14 +37,14 @@ public class Modelo {
         List<Map<String, Object>> list = (List<Map<String, Object>>) responseMap.get(lista);
         return list;
     }
-
-    /* para una busqueda sin parametros
+    
+    /* para una busqueda de un solo parametros en modo validacion
     * uri: la ruta del servicio
-    * lista: nombre de la lista que trae el metodo como respuesta
+    * params: descripcion del objeto que se va a validar
+    *respuesta: 1 si existe o 0 si no existe
      */
-    public List<Map<String, Object>> buscar(String uri, String lista) throws IOException {
-        Map responseMap = webService.sendRequest(uri);
-        List<Map<String, Object>> list = (List<Map<String, Object>>) responseMap.get(lista);
-        return list;
+    public String buscar(String uri, String param) throws IOException {
+        Map responseMap = webService.sendRequest(uri, param);
+        return responseMap.get("respuesta").toString();
     }
 }
