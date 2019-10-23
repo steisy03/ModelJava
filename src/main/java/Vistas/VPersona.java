@@ -46,9 +46,13 @@ public class VPersona extends javax.swing.JFrame {
         map.put("estado", CActivo.isSelected());
     }
 
-    private boolean validar() {
+    private boolean validar() throws IOException {
+
         if (TNombre.getText().equals("")) {
             this.message("debe llenar la nombre", "Advertencia");
+            return false;
+        } else if (modelo.buscar("get_persona", TNombre.getText()).equals("1")) {
+            this.message("el nombre ya existe", "Advertencia");
             return false;
         } else if (TApellido.getText().equals("")) {
             this.message("debe llenar la apellido", "Advertencia");
@@ -63,7 +67,7 @@ public class VPersona extends javax.swing.JFrame {
         dModel.addColumn("#");
         dModel.addColumn("Nombre");
         dModel.addColumn("Apellido");
-        dModel.addColumn("Estado");
+        dModel.addColumn("estado");
     }
 
     private DefaultTableModel llenarTabla() throws IOException {
@@ -73,7 +77,7 @@ public class VPersona extends javax.swing.JFrame {
         }
         //volver a llenar
         Object[] fila = new Object[4];
-        List<Map<String, Object>> list = modelo.buscar("get_persona", "f_persona", new HashMap());
+        List<Map<String, Object>> list = modelo.buscar("get_persona", "f_persona", new HashMap<>());
         list.stream().forEach(mapsData -> {
             fila[0] = mapsData.get("id");
             fila[1] = mapsData.get("nombre");
@@ -225,10 +229,10 @@ public class VPersona extends javax.swing.JFrame {
     private void TNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TNombreActionPerformed
 
     }//GEN-LAST:event_TNombreActionPerformed
-
+    /* */
     private void BSalvarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BSalvarMouseClicked
-        if (validar()) {
-            try {
+        try {
+            if (validar()) {
                 if (this.condicion == 1) {
                     result = modelo.crud("crear_persona", map);
                 } else {
@@ -240,10 +244,11 @@ public class VPersona extends javax.swing.JFrame {
                 } else {
                     this.message(result, "Advertencia");
                 }
-            } catch (IOException ex) {
-                Logger.getLogger(VPersona.class.getName()).log(Level.SEVERE, null, ex);
             }
+        } catch (IOException ex) {
+            Logger.getLogger(VPersona.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }//GEN-LAST:event_BSalvarMouseClicked
 
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
