@@ -57,11 +57,11 @@ public class VPersona extends javax.swing.JFrame {
         if (TNombre.getText().equals("")) {
             this.message("debe llenar la nombre", "Advertencia");
             return false;
-<<<<<<< HEAD
+
         } else if (modelo.buscar("get_persona", TNombre.getText()).equals("1")) {
-=======
+
         } else if (this.condicion == 1 && modelo.buscar("get_persona", TNombre.getText()).equals("1")) {
->>>>>>> c4c24ec6001bb6b72733d213bf98efa0963a1ebe
+
             this.message("el nombre ya existe", "Advertencia");
             return false;
         } else if (TApellido.getText().equals("")) {
@@ -78,11 +78,9 @@ public class VPersona extends javax.swing.JFrame {
         dModel.addColumn("Nombre");
         dModel.addColumn("Apellido");
         dModel.addColumn("estado");
-<<<<<<< HEAD
-=======
         dModel.addColumn("id_tipo_persona");
         dModel.addColumn("tipo_persona");
->>>>>>> c4c24ec6001bb6b72733d213bf98efa0963a1ebe
+
     }
 
     private DefaultTableModel llenarTabla() throws IOException {
@@ -91,11 +89,11 @@ public class VPersona extends javax.swing.JFrame {
             dModel.removeRow(i);
         }
         //volver a llenar
-<<<<<<< HEAD
-        Object[] fila = new Object[4];
-=======
+
+        //Object[] fila = new Object[4];
+
         Object[] fila = new Object[6];
->>>>>>> c4c24ec6001bb6b72733d213bf98efa0963a1ebe
+
         List<Map<String, Object>> list = modelo.buscar("get_persona", "f_persona", new HashMap<>());
         list.stream().forEach(mapsData -> {
             fila[0] = mapsData.get("id");
