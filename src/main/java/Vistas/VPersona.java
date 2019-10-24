@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import modulos.Combo;
 
 public class VPersona extends javax.swing.JFrame {
 
@@ -25,7 +26,10 @@ public class VPersona extends javax.swing.JFrame {
         dModel = new DefaultTableModel();
         this.generarTabla();
         TPersona.setModel(this.llenarTabla());
+        this.llenarCombo();
         TPersona.getColumnModel().getColumn(3).setMaxWidth(0);
+        TPersona.getColumnModel().getColumn(4).setMaxWidth(0);
+        TPersona.getColumnModel().getColumn(5).setMaxWidth(0);
     }
 
     private void limpiar() throws IOException {
@@ -36,6 +40,7 @@ public class VPersona extends javax.swing.JFrame {
         this.codigo = 0;
         TNombre.requestFocus();
         TPersona.setModel(this.llenarTabla());
+        CTipoPersona.setSelectedItem(new Combo(0, "Seleccione"));
     }
 
     private void capturarDatos() {
@@ -43,6 +48,7 @@ public class VPersona extends javax.swing.JFrame {
         map.put("id", this.codigo);
         map.put("nombre", TNombre.getText());
         map.put("apellido", TApellido.getText());
+        map.put("id_tipo_persona", ((Combo) CTipoPersona.getSelectedItem()).getId());
         map.put("estado", CActivo.isSelected());
     }
 
@@ -51,7 +57,7 @@ public class VPersona extends javax.swing.JFrame {
         if (TNombre.getText().equals("")) {
             this.message("debe llenar la nombre", "Advertencia");
             return false;
-        } else if (modelo.buscar("get_persona", TNombre.getText()).equals("1")) {
+        } else if (this.condicion == 1 && modelo.buscar("get_persona", TNombre.getText()).equals("1")) {
             this.message("el nombre ya existe", "Advertencia");
             return false;
         } else if (TApellido.getText().equals("")) {
@@ -68,6 +74,8 @@ public class VPersona extends javax.swing.JFrame {
         dModel.addColumn("Nombre");
         dModel.addColumn("Apellido");
         dModel.addColumn("estado");
+        dModel.addColumn("id_tipo_persona");
+        dModel.addColumn("tipo_persona");
     }
 
     private DefaultTableModel llenarTabla() throws IOException {
@@ -76,16 +84,26 @@ public class VPersona extends javax.swing.JFrame {
             dModel.removeRow(i);
         }
         //volver a llenar
-        Object[] fila = new Object[4];
+        Object[] fila = new Object[6];
         List<Map<String, Object>> list = modelo.buscar("get_persona", "f_persona", new HashMap<>());
         list.stream().forEach(mapsData -> {
             fila[0] = mapsData.get("id");
             fila[1] = mapsData.get("nombre");
             fila[2] = mapsData.get("apellido");
             fila[3] = mapsData.get("estado");
+            fila[4] = mapsData.get("id_tipo_persona");
+            fila[5] = mapsData.get("tipo_persona");
             dModel.addRow(fila);
         });
         return dModel;
+    }
+
+    private void llenarCombo() throws IOException {
+        List<Map<String, Object>> list = modelo.buscar("get_tipo_persona", "f_tipo_persona", new HashMap<>());
+        CTipoPersona.addItem(new Combo(0, "Seleccione"));
+        list.stream().forEach(mapsData -> {
+            CTipoPersona.addItem(new Combo(mapsData.get("id"), mapsData.get("descripcion").toString()));
+        });
     }
 
     /*mensajes*/
@@ -107,6 +125,8 @@ public class VPersona extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         TApellido = new javax.swing.JTextField();
         CActivo = new javax.swing.JCheckBox();
+        CTipoPersona = new javax.swing.JComboBox<>();
+        jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -154,6 +174,11 @@ public class VPersona extends javax.swing.JFrame {
                 jButton2MouseClicked(evt);
             }
         });
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Salir");
         jButton3.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -171,6 +196,8 @@ public class VPersona extends javax.swing.JFrame {
 
         CActivo.setText("Activo");
 
+        jLabel3.setText("Tipo Persna:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -178,6 +205,7 @@ public class VPersona extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(25, 25, 25)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel3)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(4, 4, 4)
                         .addComponent(jLabel1))
@@ -189,7 +217,8 @@ public class VPersona extends javax.swing.JFrame {
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addComponent(TApellido, javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(TNombre, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE))
-                    .addComponent(CActivo))
+                    .addComponent(CActivo)
+                    .addComponent(CTipoPersona, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -213,9 +242,13 @@ public class VPersona extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(TApellido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
+                        .addComponent(jLabel3)
+                        .addGap(14, 14, 14)
+                        .addComponent(CTipoPersona, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addComponent(CActivo))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
+                .addGap(23, 23, 23)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(BSalvar)
                     .addComponent(jButton2)
@@ -270,6 +303,7 @@ public class VPersona extends javax.swing.JFrame {
             this.TNombre.setText(TPersona.getValueAt(TPersona.getSelectedRow(), 1).toString());
             this.TApellido.setText(TPersona.getValueAt(TPersona.getSelectedRow(), 2).toString());
             this.CActivo.setSelected((Boolean) TPersona.getValueAt(TPersona.getSelectedRow(), 3));
+            this.CTipoPersona.setSelectedItem(new Combo(Integer.parseInt(TPersona.getValueAt(TPersona.getSelectedRow(), 4).toString()),TPersona.getValueAt(TPersona.getSelectedRow(), 5).toString()));
         }
     }//GEN-LAST:event_TPersonaMouseClicked
 
@@ -280,6 +314,14 @@ public class VPersona extends javax.swing.JFrame {
     private void BSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BSalvarActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_BSalvarActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        try {
+            this.limpiar();
+        } catch (IOException ex) {
+            Logger.getLogger(VPersona.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -323,6 +365,7 @@ public class VPersona extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BSalvar;
     private javax.swing.JCheckBox CActivo;
+    private javax.swing.JComboBox<Combo> CTipoPersona;
     private javax.swing.JTextField TApellido;
     private javax.swing.JTextField TNombre;
     private javax.swing.JTable TPersona;
@@ -330,6 +373,7 @@ public class VPersona extends javax.swing.JFrame {
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 }

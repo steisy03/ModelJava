@@ -30,6 +30,9 @@ public class Combo {
         return descripcion;
     }
     
-    
+    @Override
+    public boolean equals(Object o) {
+        return this.id == ((Combo) o).id;
+    }
     
 }
