@@ -26,16 +26,16 @@ public class WebService {
     private static final String BASE_URI = "http://localhost:4567/";
 
     public WebService() {
-      
+
     }
 
     public Map sendRequest(String uri, Map jsonData) throws IOException {
-        
+
         client = ClientBuilder.newClient();
-        webTarget = client.target(BASE_URI+uri);
+        webTarget = client.target(BASE_URI + uri);
         Form frm = new Form();
         frm.param("json", Utilidades.jsonConvertMapToJson(jsonData));
-        
+
         Response response = null;
 
         try {
@@ -50,12 +50,12 @@ public class WebService {
         }
         return Utilidades.jsonConvertJsonToMap(respuesta);
     }
-    
+
     public Map sendRequest(String uri, String descripcion) throws IOException {
-        
+
         client = ClientBuilder.newClient();
-        webTarget = client.target(BASE_URI+uri+"/"+descripcion);
-        
+        webTarget = client.target(BASE_URI + uri + "/" + descripcion);
+
         Response response = null;
 
         try {
@@ -74,5 +74,5 @@ public class WebService {
     public void close() {
         client.close();
     }
-    
+
 }
